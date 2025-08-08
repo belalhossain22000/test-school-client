@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { ArrowLeft, Mail, CheckCircle } from 'lucide-react'
+import { useForgotPasswordMutation } from "@/redux/api/authApi"
 
 export default function ForgotPasswordPage() {
   const router = useRouter()
@@ -17,13 +18,19 @@ export default function ForgotPasswordPage() {
   const [isSuccess, setIsSuccess] = useState(false)
   const [error, setError] = useState("")
 
+  const [forgotPassFn,{isLoading:isForgotLoading}]=  useForgotPasswordMutation()
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
     setError("")
 
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1500))
+    try {
+      await forgotPassFn({ email }).unwrap()
+    } catch (err: any) {
+      console.log(err);
+      setError(err.message || "Password reset failed. Please try again.")
+    }
 
     // Mock successful password reset request
     setIsSuccess(true)

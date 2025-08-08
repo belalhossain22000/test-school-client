@@ -9,6 +9,7 @@ interface AuthState {
 
 interface DecodedUser {
   id: string;
+  name: string;
   email: string;
   role: "SUPER_ADMIN" | "ADMIN" | "STUDENT" | "SUPERVISOR";
 }
