@@ -11,6 +11,8 @@ import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Clock, ChevronLeft, ChevronRight, Flag, AlertTriangle, CheckCircle, Home, RotateCcw, Play } from 'lucide-react'
+import { useDispatch, useSelector } from "react-redux"
+import { getUser, logout } from "@/redux/features/authSlice"
 
 // Extended mock test data with more questions
 const mockTestData = {
@@ -155,22 +157,25 @@ const mockTestData = {
 export default function TestPage() {
   const router = useRouter()
   const [currentQuestion, setCurrentQuestion] = useState(0)
-  const [answers, setAnswers] = useState<{[key: number]: number}>({})
+  const [answers, setAnswers] = useState<{ [key: number]: number }>({})
   const [timeRemaining, setTimeRemaining] = useState(mockTestData.timeLimit)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [flaggedQuestions, setFlaggedQuestions] = useState<Set<number>>(new Set())
   const [testStarted, setTestStarted] = useState(false)
   const [showConfirmSubmit, setShowConfirmSubmit] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+  const user = useSelector(getUser);
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    // Check authentication
-    const token = localStorage.getItem("accessToken")
-    const role = localStorage.getItem("userRole")
     
-    if (!token || role !== "student") {
+    if (!user || user.role !== "student") {
+      dispatch(logout());
       router.push("/auth/login")
       return
     }
+
+    setTimeout(() => setIsLoading(false), 1000)
   }, [router])
 
   useEffect(() => {
@@ -220,7 +225,7 @@ export default function TestPage() {
 
   const handleSubmitTest = async () => {
     setIsSubmitting(true)
-    
+
     // Calculate score
     let correctAnswers = 0
     mockTestData.questions.forEach(question => {
@@ -228,12 +233,12 @@ export default function TestPage() {
         correctAnswers++
       }
     })
-    
+
     const score = Math.round((correctAnswers / mockTestData.questions.length) * 100)
-    
+
     // Simulate API submission
     await new Promise(resolve => setTimeout(resolve, 2000))
-    
+
     // Redirect to results
     router.push(`/student/results?score=${score}&step=${mockTestData.step}`)
   }
@@ -435,15 +440,13 @@ export default function TestPage() {
                         key={index}
                         variant={currentQuestion === index ? "default" : "outline"}
                         size="sm"
-                        className={`relative ${
-                          answers[mockTestData.questions[index].id] !== undefined
+                        className={`relative ${answers[mockTestData.questions[index].id] !== undefined
                             ? 'bg-green-100 border-green-300 text-green-800 hover:bg-green-200'
                             : ''
-                        } ${
-                          flaggedQuestions.has(mockTestData.questions[index].id)
+                          } ${flaggedQuestions.has(mockTestData.questions[index].id)
                             ? 'border-orange-300 bg-orange-50'
                             : ''
-                        }`}
+                          }`}
                         onClick={() => setCurrentQuestion(index)}
                       >
                         {index + 1}
@@ -510,7 +513,7 @@ export default function TestPage() {
                   <Alert className="mb-4">
                     <AlertTriangle className="h-4 w-4" />
                     <AlertDescription>
-                      You have {mockTestData.questions.length - answeredQuestions} unanswered questions. 
+                      You have {mockTestData.questions.length - answeredQuestions} unanswered questions.
                       These will be marked as incorrect.
                     </AlertDescription>
                   </Alert>

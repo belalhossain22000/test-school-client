@@ -8,6 +8,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { Trophy, Clock, BookOpen, Award, TrendingUp, Play, Download, CheckCircle, Lock } from 'lucide-react'
+import { useDispatch, useSelector } from "react-redux"
+import { getUser, logout } from "@/redux/features/authSlice"
 
 // Mock student data
 const mockStudentData = {
@@ -67,17 +69,18 @@ export default function StudentDashboard() {
   const [studentData, setStudentData] = useState(mockStudentData)
   const [isLoading, setIsLoading] = useState(true)
 
+  const user = useSelector(getUser);
+  const dispatch = useDispatch();
+
   useEffect(() => {
-    // Check authentication
-    const token = localStorage.getItem("accessToken")
-    const role = localStorage.getItem("userRole")
-    
-    if (!token || role !== "student") {
+
+
+    if (!user || user.role !== "student") {
+      dispatch(logout());
       router.push("/auth/login")
       return
     }
 
-    // Simulate data loading
     setTimeout(() => setIsLoading(false), 1000)
   }, [router])
 
@@ -200,7 +203,7 @@ export default function StudentDashboard() {
                     </div>
                     <Badge variant="secondary">Available</Badge>
                   </div>
-                  
+
                   <div className="bg-blue-50 p-4 rounded-lg">
                     <h4 className="font-medium text-blue-900 mb-2">Assessment Guidelines:</h4>
                     <ul className="text-sm text-blue-800 space-y-1">
@@ -211,8 +214,8 @@ export default function StudentDashboard() {
                     </ul>
                   </div>
 
-                  <Button 
-                    onClick={handleStartTest} 
+                  <Button
+                    onClick={handleStartTest}
                     className="w-full"
                     size="lg"
                   >
@@ -234,11 +237,10 @@ export default function StudentDashboard() {
                   {studentData.upcomingTests.map((test, index) => (
                     <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
                       <div className="flex items-center space-x-3">
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                          test.status === 'available' ? 'bg-green-100 text-green-600' :
-                          test.status === 'locked' ? 'bg-gray-100 text-gray-400' :
-                          'bg-blue-100 text-blue-600'
-                        }`}>
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${test.status === 'available' ? 'bg-green-100 text-green-600' :
+                            test.status === 'locked' ? 'bg-gray-100 text-gray-400' :
+                              'bg-blue-100 text-blue-600'
+                          }`}>
                           {test.status === 'available' ? (
                             <Play className="w-4 h-4" />
                           ) : test.status === 'locked' ? (
@@ -252,7 +254,7 @@ export default function StudentDashboard() {
                           <p className="text-sm text-gray-600">{test.description}</p>
                         </div>
                       </div>
-                      <Badge 
+                      <Badge
                         variant={test.status === 'available' ? 'default' : 'secondary'}
                         className="capitalize"
                       >
@@ -281,7 +283,7 @@ export default function StudentDashboard() {
                     </div>
                     <Progress value={progressPercentage} className="h-2" />
                   </div>
-                  
+
                   <div className="space-y-2">
                     <div className="flex items-center justify-between text-sm">
                       <span>Step 1 (A1-A2)</span>
@@ -324,9 +326,9 @@ export default function StudentDashboard() {
                       </div>
                     </div>
                   ))}
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
+                  <Button
+                    variant="outline"
+                    size="sm"
                     className="w-full"
                     onClick={handleViewResults}
                   >

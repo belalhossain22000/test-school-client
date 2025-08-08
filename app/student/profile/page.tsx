@@ -12,6 +12,9 @@ import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { Separator } from "@/components/ui/separator"
 import { User, Mail, Calendar, Trophy, BookOpen, Award, Save, Edit } from 'lucide-react'
+import { useDispatch, useSelector } from "react-redux"
+import { getUser, logout } from "@/redux/features/authSlice"
+import { log } from "console"
 
 export default function StudentProfilePage() {
   const router = useRouter()
@@ -31,11 +34,14 @@ export default function StudentProfilePage() {
     certificates: 1
   })
 
+  const user = useSelector(getUser);
+  const dispatch = useDispatch();
+
   useEffect(() => {
-    const token = localStorage.getItem("accessToken")
-    const role = localStorage.getItem("userRole")
-    
-    if (!token || role !== "student") {
+
+
+    if (!user || user.role !== "student") {
+      dispatch(logout());
       router.push("/auth/login")
       return
     }

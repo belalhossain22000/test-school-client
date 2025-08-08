@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Download, Award, Calendar, Trophy, Share2, Eye } from 'lucide-react'
+import { useDispatch, useSelector } from "react-redux"
+import { getUser, logout } from "@/redux/features/authSlice"
 
 const mockCertificates = [
   {
@@ -25,11 +27,13 @@ export default function StudentCertificatesPage() {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(true)
 
+  const user = useSelector(getUser);
+  const dispatch = useDispatch();
+
   useEffect(() => {
-    const token = localStorage.getItem("accessToken")
-    const role = localStorage.getItem("userRole")
-    
-    if (!token || role !== "student") {
+
+    if (!user || user.role !== "student") {
+      dispatch(logout());
       router.push("/auth/login")
       return
     }
@@ -181,14 +185,14 @@ export default function StudentCertificatesPage() {
                   </div>
 
                   <div className="flex flex-col sm:flex-row gap-2">
-                    <Button 
+                    <Button
                       onClick={() => handleViewCertificate(certificate.id)}
                       className="flex-1"
                     >
                       <Eye className="w-4 h-4 mr-2" />
                       View
                     </Button>
-                    <Button 
+                    <Button
                       variant="outline"
                       onClick={() => handleDownloadCertificate(certificate.id)}
                       className="flex-1"
@@ -196,7 +200,7 @@ export default function StudentCertificatesPage() {
                       <Download className="w-4 h-4 mr-2" />
                       Download
                     </Button>
-                    <Button 
+                    <Button
                       variant="outline"
                       onClick={() => handleShareCertificate(certificate.id)}
                       className="flex-1"

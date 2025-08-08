@@ -909,9 +909,6 @@ video {
 .mt-auto {
   margin-top: auto;
 }
-.mt-20 {
-  margin-top: 5rem;
-}
 .block {
   display: block;
 }
@@ -1829,9 +1826,6 @@ video {
 }
 .p-\[1px\] {
   padding: 1px;
-}
-.p-8 {
-  padding: 2rem;
 }
 .px-1 {
   padding-left: 0.25rem;

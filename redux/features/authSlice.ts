@@ -11,7 +11,7 @@ interface DecodedUser {
   id: string;
   name: string;
   email: string;
-  role: "SUPER_ADMIN" | "ADMIN" | "STUDENT" | "SUPERVISOR";
+  role: "super_admin" | "admin" | "student" | "supervisor";
 }
 
 const initialState: AuthState = {
