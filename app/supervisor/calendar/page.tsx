@@ -12,6 +12,8 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { CalendarIcon, Plus, Clock, Users, BookOpen, Video, ChevronLeft, ChevronRight, Eye, Edit, Trash2 } from 'lucide-react'
+import { useDispatch, useSelector } from "react-redux"
+import { getUser, logout } from "@/redux/features/authSlice"
 
 // Mock calendar data
 const mockEvents = [
@@ -80,6 +82,7 @@ export default function SupervisorCalendarPage() {
   const [selectedDate, setSelectedDate] = useState(new Date())
   const [showAddEvent, setShowAddEvent] = useState(false)
   const [selectedEvent, setSelectedEvent] = useState<any>(null)
+  const [isLoading, setIsLoading] = useState(true)
   const [newEvent, setNewEvent] = useState({
     title: "",
     type: "",
@@ -90,15 +93,19 @@ export default function SupervisorCalendarPage() {
     description: ""
   })
 
+  const user = useSelector(getUser);
+  const dispatch = useDispatch();
+
   useEffect(() => {
-    // Check authentication
-    const token = localStorage.getItem("accessToken")
-    const role = localStorage.getItem("userRole")
-    
-    if (!token || role !== "supervisor") {
+
+
+    if (!user || user.role !== "supervisor") {
+      dispatch(logout());
       router.push("/auth/login")
       return
     }
+
+    setTimeout(() => setIsLoading(false), 1000)
   }, [router])
 
   const getEventTypeInfo = (type: string) => {

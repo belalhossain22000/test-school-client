@@ -25,6 +25,8 @@ import {
 import { Input } from "@/components/ui/input"
 import { Progress } from "@/components/ui/progress"
 import { Users, BookOpen, Award, TrendingUp, Search, Download, Eye, BarChart3, Calendar } from 'lucide-react'
+import { useDispatch, useSelector } from "react-redux"
+import { getUser, logout } from "@/redux/features/authSlice"
 
 // Mock supervisor data
 const mockSupervisorData = {
@@ -122,17 +124,18 @@ export default function SupervisorDashboard() {
   const [isLoading, setIsLoading] = useState(true)
   const itemsPerPage = 10
 
+const user = useSelector(getUser);
+  const dispatch = useDispatch();
+
   useEffect(() => {
-    // Check authentication
-    const token = localStorage.getItem("accessToken")
-    const role = localStorage.getItem("userRole")
-    
-    if (!token || role !== "supervisor") {
+
+
+    if (!user || user.role !== "supervisor") {
+      dispatch(logout());
       router.push("/auth/login")
       return
     }
 
-    // Simulate data loading
     setTimeout(() => setIsLoading(false), 1000)
   }, [router])
 

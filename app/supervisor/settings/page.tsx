@@ -14,10 +14,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
 import { User, Bell, Shield, Globe, Palette, Download, Trash2, Camera, Save, Eye, EyeOff } from 'lucide-react'
+import { useDispatch, useSelector } from "react-redux"
+import { getUser, logout } from "@/redux/features/authSlice"
 
 export default function SupervisorSettingsPage() {
   const router = useRouter()
   const [showPassword, setShowPassword] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const [settings, setSettings] = useState({
     // Profile settings
     firstName: "John",
@@ -49,15 +52,19 @@ export default function SupervisorSettingsPage() {
     sessionTimeout: "30"
   })
 
+  const user = useSelector(getUser);
+  const dispatch = useDispatch();
+
   useEffect(() => {
-    // Check authentication
-    const token = localStorage.getItem("accessToken")
-    const role = localStorage.getItem("userRole")
-    
-    if (!token || role !== "supervisor") {
+
+
+    if (!user || user.role !== "supervisor") {
+      dispatch(logout());
       router.push("/auth/login")
       return
     }
+
+    setTimeout(() => setIsLoading(false), 1000)
   }, [router])
 
   const handleSaveProfile = () => {

@@ -11,6 +11,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Progress } from "@/components/ui/progress"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Download, FileText, TrendingUp, Users, Award, Clock, BarChart3, PieChart, Calendar, Filter } from 'lucide-react'
+import { useDispatch, useSelector } from "react-redux"
+import { getUser, logout } from "@/redux/features/authSlice"
 
 // Mock report data
 const mockReportData = {
@@ -39,16 +41,21 @@ export default function SupervisorReportsPage() {
   const router = useRouter()
   const [selectedPeriod, setSelectedPeriod] = useState("month")
   const [selectedLevel, setSelectedLevel] = useState("all")
+  const [isLoading, setIsLoading] = useState(true)
+
+  const user = useSelector(getUser);
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    // Check authentication
-    const token = localStorage.getItem("accessToken")
-    const role = localStorage.getItem("userRole")
-    
-    if (!token || role !== "supervisor") {
+
+
+    if (!user || user.role !== "supervisor") {
+      dispatch(logout());
       router.push("/auth/login")
       return
     }
+
+    setTimeout(() => setIsLoading(false), 1000)
   }, [router])
 
   const handleExportReport = (reportType: string) => {

@@ -14,6 +14,8 @@ import { Progress } from "@/components/ui/progress"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Search, Filter, Eye, Mail, Phone, Calendar, Award, TrendingUp, Clock, Users, BookOpen, CheckCircle, AlertCircle, Download } from 'lucide-react'
+import { useDispatch, useSelector } from "react-redux"
+import { getUser, logout } from "@/redux/features/authSlice"
 
 // Mock student data
 const mockStudents = [
@@ -111,16 +113,21 @@ export default function SupervisorStudentsPage() {
   const [statusFilter, setStatusFilter] = useState("all")
   const [levelFilter, setLevelFilter] = useState("all")
   const [selectedStudent, setSelectedStudent] = useState<any>(null)
+  const [isLoading, setIsLoading] = useState(true)
+
+  const user = useSelector(getUser);
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    // Check authentication
-    const token = localStorage.getItem("accessToken")
-    const role = localStorage.getItem("userRole")
-    
-    if (!token || role !== "supervisor") {
+
+
+    if (!user || user.role !== "supervisor") {
+      dispatch(logout());
       router.push("/auth/login")
       return
     }
+
+    setTimeout(() => setIsLoading(false), 1000)
   }, [router])
 
   // Filter students based on search and filters

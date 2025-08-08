@@ -15,6 +15,8 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Badge } from "@/components/ui/badge"
 import { Home, Users, BookOpen, Award, BarChart3, Settings, LogOut, Bell, Menu, X, User, FileText, Calendar, HelpCircle, Shield, UserCheck } from 'lucide-react'
+import { useDispatch, useSelector } from "react-redux"
+import { getUser, logout } from "@/redux/features/authSlice"
 
 interface DashboardLayoutProps {
   children: React.ReactNode
@@ -42,11 +44,11 @@ export default function DashboardLayout({ children, userRole }: DashboardLayoutP
     })
   }, [])
 
+ const user = useSelector(getUser);
+
+  const dispatch = useDispatch();
   const handleLogout = () => {
-    localStorage.removeItem("accessToken")
-    localStorage.removeItem("refreshToken")
-    localStorage.removeItem("userRole")
-    localStorage.removeItem("userEmail")
+    dispatch(logout());
     router.push("/")
   }
 
@@ -126,17 +128,17 @@ export default function DashboardLayout({ children, userRole }: DashboardLayoutP
         <div className="px-4 py-4">
           <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
             <Avatar className="w-10 h-10">
-              <AvatarImage src={userInfo.avatar || "/placeholder.svg"} />
+              <AvatarImage src={ "/profile.png"} />
               <AvatarFallback>
-                {userInfo.name.split(' ').map(n => n[0]).join('')}
+                {user?.name.split(' ').map(n => n[0]).join('')}
               </AvatarFallback>
             </Avatar>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-gray-900 truncate">
-                {userInfo.name}
+                {user?.name}
               </p>
               <Badge variant="secondary" className="text-xs capitalize">
-                {userRole}
+                {user?.role}
               </Badge>
             </div>
           </div>
@@ -214,10 +216,10 @@ export default function DashboardLayout({ children, userRole }: DashboardLayoutP
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage src={userInfo.avatar || "/placeholder.svg"} />
+                  <Avatar className="h-12 w-12">
+                    <AvatarImage src={ "/profile.png"} />
                     <AvatarFallback>
-                      {userInfo.name.split(' ').map(n => n[0]).join('')}
+                      {user?.name.split(' ').map(n => n[0]).join('')}
                     </AvatarFallback>
                   </Avatar>
                 </Button>
@@ -225,9 +227,9 @@ export default function DashboardLayout({ children, userRole }: DashboardLayoutP
               <DropdownMenuContent className="w-56" align="end" forceMount>
                 <DropdownMenuLabel className="font-normal">
                   <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none">{userInfo.name}</p>
+                    <p className="text-sm font-medium leading-none">{user?.name}</p>
                     <p className="text-xs leading-none text-muted-foreground">
-                      {userInfo.email}
+                      {user?.email}
                     </p>
                   </div>
                 </DropdownMenuLabel>

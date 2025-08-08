@@ -10,6 +10,8 @@ import { Progress } from "@/components/ui/progress"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { TrendingUp, TrendingDown, Users, Clock, Target, Award, Brain, Activity, BarChart3, PieChart, LineChart, Zap, AlertTriangle, CheckCircle, Star } from 'lucide-react'
+import { useDispatch, useSelector } from "react-redux"
+import { getUser, logout } from "@/redux/features/authSlice"
 
 // Mock analytics data
 const mockAnalyticsData = {
@@ -69,16 +71,21 @@ export default function SupervisorAnalyticsPage() {
   const router = useRouter()
   const [selectedPeriod, setSelectedPeriod] = useState("month")
   const [selectedMetric, setSelectedMetric] = useState("performance")
+  const [isLoading, setIsLoading] = useState(true)
+
+  const user = useSelector(getUser);
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    // Check authentication
-    const token = localStorage.getItem("accessToken")
-    const role = localStorage.getItem("userRole")
-    
-    if (!token || role !== "supervisor") {
+
+
+    if (!user || user.role !== "supervisor") {
+      dispatch(logout());
       router.push("/auth/login")
       return
     }
+
+    setTimeout(() => setIsLoading(false), 1000)
   }, [router])
 
   const getPriorityColor = (priority: string) => {
