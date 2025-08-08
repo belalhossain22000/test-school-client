@@ -9,6 +9,9 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Eye, EyeOff, ArrowLeft } from 'lucide-react'
+import { useLoginMutation } from "@/redux/api/authApi"
+import { useDispatch } from "react-redux"
+import { setUser } from "@/redux/features/authSlice"
 
 export default function LoginPage() {
   const router = useRouter()
@@ -17,50 +20,29 @@ export default function LoginPage() {
     email: "",
     password: ""
   })
-  const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
+   const dispatch = useDispatch()
+  const [loginFn,{isLoading}] = useLoginMutation()
 
-  // Mock user data for demonstration
-  const mockUsers = [
-    { email: "admin@testschool.com", password: "admin123", role: "admin" },
-    { email: "student@testschool.com", password: "student123", role: "student" },
-    { email: "supervisor@testschool.com", password: "supervisor123", role: "supervisor" }
-  ]
 
-  const handleSubmit = async (e: React.FormEvent) => {
+
+   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setIsLoading(true)
     setError("")
 
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    try {
+      const res = await loginFn({ email:formData.email, password: formData.password }).unwrap()
 
-    // Mock authentication
-    const user = mockUsers.find(u => u.email === formData.email && u.password === formData.password)
-    
-    if (user) {
-      // Mock JWT token storage
-      localStorage.setItem("accessToken", "mock-jwt-token")
-      localStorage.setItem("refreshToken", "mock-refresh-token")
-      localStorage.setItem("userRole", user.role)
-      localStorage.setItem("userEmail", user.email)
-
-      // Redirect based on role
-      switch (user.role) {
-        case "admin":
-          router.push("/admin/dashboard")
-          break
-        case "supervisor":
-          router.push("/supervisor/dashboard")
-          break
-        default:
-          router.push("/student/dashboard")
+      if (res.success) {
+        dispatch(setUser({ token: res?.data?.token }))
+        router.push("/")
+      } else {
+        setError(res?.error || "Login failed. Please try again.")
       }
-    } else {
-      setError("Invalid email or password")
+    } catch (err: any) {
+      console.log(err);
+      setError(err.message || "Login failed. Please try again.")
     }
-
-    setIsLoading(false)
   }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {

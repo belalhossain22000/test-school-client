@@ -1,8 +1,23 @@
+"use client"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { CheckCircle, Clock, Award, Users, BarChart3, Shield } from 'lucide-react'
+import { CheckCircle, Clock, Award, Users, BarChart3, Shield, User, Settings, LogOut } from 'lucide-react'
+import { useDispatch, useSelector } from "react-redux"
+import { getUser, logout } from "@/redux/features/authSlice"
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { useRouter } from "next/navigation"
+
 
 export default function HomePage() {
   const features = [
@@ -46,6 +61,14 @@ export default function HomePage() {
     { level: "C1", color: "bg-purple-100 text-purple-800", description: "Advanced digital skills" },
     { level: "C2", color: "bg-purple-200 text-purple-800", description: "Expert digital competency" }
   ]
+  const router = useRouter()
+  const user = useSelector(getUser);
+
+  const dispatch = useDispatch();
+  const handleLogout = () => {
+    dispatch(logout());
+    router.push("/")
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -65,18 +88,55 @@ export default function HomePage() {
             <Link href="#levels" className="text-gray-600 hover:text-blue-600 transition-colors">
               Levels
             </Link>
-            <Link href="#about" className="text-gray-600 hover:text-blue-600 transition-colors">
-              About
-            </Link>
+
           </nav>
-          <div className="flex space-x-2">
+          {!user?.role ? <div className="flex space-x-2">
             <Button variant="outline" asChild>
               <Link href="/auth/login">Login</Link>
             </Button>
             <Button asChild>
               <Link href="/auth/register">Get Started</Link>
             </Button>
-          </div>
+          </div> : <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                <Avatar className="h-8 w-8">
+                  <AvatarImage src={"/placeholder.svg"} />
+                  <AvatarFallback>
+                    {user.email.split(' ').map(n => n[0]).join('')}
+                  </AvatarFallback>
+                </Avatar>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56" align="end" forceMount>
+              <DropdownMenuLabel className="font-normal">
+                <div className="flex flex-col space-y-1">
+                  <p className="text-sm font-medium leading-none">{user.email}</p>
+                  <p className="text-xs leading-none text-muted-foreground">
+                    {user.email}
+                  </p>
+                </div>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem asChild>
+                <Link href={`/${user.role}/profile`}>
+                  <User className="mr-2 h-4 w-4" />
+                  <span>Profile</span>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href={`/${user.role}/settings`}>
+                  <Settings className="mr-2 h-4 w-4" />
+                  <span>Settings</span>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={handleLogout}>
+                <LogOut className="mr-2 h-4 w-4" />
+                <span>Log out</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>}
         </div>
       </header>
 
@@ -87,7 +147,7 @@ export default function HomePage() {
             Digital Competency Assessment Platform
           </h1>
           <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-            Test and certify your digital skills through our comprehensive 3-step evaluation process. 
+            Test and certify your digital skills through our comprehensive 3-step evaluation process.
             Progress from A1 to C2 levels with secure, timed assessments.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -95,7 +155,7 @@ export default function HomePage() {
               <Link href="/auth/register">Start Assessment</Link>
             </Button>
             <Button size="lg" variant="outline" asChild>
-              <Link href="/demo">View Demo</Link>
+              <Link href="/auth/register">View Demo</Link>
             </Button>
           </div>
           <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
