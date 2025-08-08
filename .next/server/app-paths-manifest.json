@@ -1,8 +1,1 @@
-{
-  "/auth/login/page": "app/auth/login/page.js",
-  "/page": "app/page.js",
-  "/student/results/page": "app/student/results/page.js",
-  "/student/dashboard/page": "app/student/dashboard/page.js",
-  "/admin/analytics/page": "app/admin/analytics/page.js",
-  "/student/test/page": "app/student/test/page.js"
-}
+{}
