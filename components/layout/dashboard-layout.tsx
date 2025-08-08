@@ -235,13 +235,13 @@ export default function DashboardLayout({ children, userRole }: DashboardLayoutP
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                  <Link href={`/${userRole}/profile`}>
+                  <Link href={`/${user?.role}/profile`}>
                     <User className="mr-2 h-4 w-4" />
                     <span>Profile</span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link href={`/${userRole}/settings`}>
+                  <Link href={`/${user?.role}/settings`}>
                     <Settings className="mr-2 h-4 w-4" />
                     <span>Settings</span>
                   </Link>

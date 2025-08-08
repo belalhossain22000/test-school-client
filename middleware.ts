@@ -16,8 +16,7 @@ export function middleware(request: NextRequest) {
   if (authPages.includes(url.pathname) && token) {
     try {
       const user = jwtDecode<DecodedUser>(token);
-      const roleToRouteMap: Record<string, string> = {
-        super_admin: "/super_admin/dashboard",
+      const roleToRouteMap: Record<string, string> = { 
         admin: "/admin/dashboard",
         student: "/student/dashboard",
         supervisor: "/supervisor/dashboard",

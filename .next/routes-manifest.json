@@ -1,0 +1,187 @@
+{
+  "version": 3,
+  "pages404": true,
+  "caseSensitive": false,
+  "basePath": "",
+  "redirects": [
+    {
+      "source": "/:path+/",
+      "destination": "/:path+",
+      "internal": true,
+      "statusCode": 308,
+      "regex": "^(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))/$"
+    }
+  ],
+  "headers": [],
+  "dynamicRoutes": [],
+  "staticRoutes": [
+    {
+      "page": "/",
+      "regex": "^/(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/(?:/)?$"
+    },
+    {
+      "page": "/_not-found",
+      "regex": "^/_not\\-found(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/_not\\-found(?:/)?$"
+    },
+    {
+      "page": "/admin/analytics",
+      "regex": "^/admin/analytics(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/analytics(?:/)?$"
+    },
+    {
+      "page": "/admin/certificates",
+      "regex": "^/admin/certificates(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/certificates(?:/)?$"
+    },
+    {
+      "page": "/admin/dashboard",
+      "regex": "^/admin/dashboard(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/dashboard(?:/)?$"
+    },
+    {
+      "page": "/admin/settings",
+      "regex": "^/admin/settings(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/settings(?:/)?$"
+    },
+    {
+      "page": "/admin/tests",
+      "regex": "^/admin/tests(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/tests(?:/)?$"
+    },
+    {
+      "page": "/admin/users",
+      "regex": "^/admin/users(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/users(?:/)?$"
+    },
+    {
+      "page": "/auth/forgot-password",
+      "regex": "^/auth/forgot\\-password(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/auth/forgot\\-password(?:/)?$"
+    },
+    {
+      "page": "/auth/login",
+      "regex": "^/auth/login(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/auth/login(?:/)?$"
+    },
+    {
+      "page": "/auth/register",
+      "regex": "^/auth/register(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/auth/register(?:/)?$"
+    },
+    {
+      "page": "/auth/reset-password",
+      "regex": "^/auth/reset\\-password(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/auth/reset\\-password(?:/)?$"
+    },
+    {
+      "page": "/auth/verify-otp",
+      "regex": "^/auth/verify\\-otp(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/auth/verify\\-otp(?:/)?$"
+    },
+    {
+      "page": "/student/certificates",
+      "regex": "^/student/certificates(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/student/certificates(?:/)?$"
+    },
+    {
+      "page": "/student/dashboard",
+      "regex": "^/student/dashboard(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/student/dashboard(?:/)?$"
+    },
+    {
+      "page": "/student/profile",
+      "regex": "^/student/profile(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/student/profile(?:/)?$"
+    },
+    {
+      "page": "/student/results",
+      "regex": "^/student/results(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/student/results(?:/)?$"
+    },
+    {
+      "page": "/student/settings",
+      "regex": "^/student/settings(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/student/settings(?:/)?$"
+    },
+    {
+      "page": "/student/test",
+      "regex": "^/student/test(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/student/test(?:/)?$"
+    },
+    {
+      "page": "/supervisor/analytics",
+      "regex": "^/supervisor/analytics(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/supervisor/analytics(?:/)?$"
+    },
+    {
+      "page": "/supervisor/calendar",
+      "regex": "^/supervisor/calendar(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/supervisor/calendar(?:/)?$"
+    },
+    {
+      "page": "/supervisor/dashboard",
+      "regex": "^/supervisor/dashboard(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/supervisor/dashboard(?:/)?$"
+    },
+    {
+      "page": "/supervisor/reports",
+      "regex": "^/supervisor/reports(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/supervisor/reports(?:/)?$"
+    },
+    {
+      "page": "/supervisor/settings",
+      "regex": "^/supervisor/settings(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/supervisor/settings(?:/)?$"
+    },
+    {
+      "page": "/supervisor/students",
+      "regex": "^/supervisor/students(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/supervisor/students(?:/)?$"
+    }
+  ],
+  "dataRoutes": [],
+  "rsc": {
+    "header": "RSC",
+    "varyHeader": "RSC, Next-Router-State-Tree, Next-Router-Prefetch, Next-Router-Segment-Prefetch",
+    "prefetchHeader": "Next-Router-Prefetch",
+    "didPostponeHeader": "x-nextjs-postponed",
+    "contentTypeHeader": "text/x-component",
+    "suffix": ".rsc",
+    "prefetchSuffix": ".prefetch.rsc",
+    "prefetchSegmentHeader": "Next-Router-Segment-Prefetch",
+    "prefetchSegmentSuffix": ".segment.rsc",
+    "prefetchSegmentDirSuffix": ".segments"
+  },
+  "rewriteHeaders": {
+    "pathHeader": "x-nextjs-rewritten-path",
+    "queryHeader": "x-nextjs-rewritten-query"
+  },
+  "rewrites": []
+}
