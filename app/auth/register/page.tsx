@@ -10,6 +10,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Eye, EyeOff, ArrowLeft } from 'lucide-react'
+import { useRegisterMutation } from "@/redux/api/authApi"
+import { toast } from "sonner"
 
 export default function RegisterPage() {
   const router = useRouter()
@@ -25,33 +27,50 @@ export default function RegisterPage() {
   })
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
+  const [resisterFn, { isLoading: isRegisterLoading }] = useRegisterMutation()
+
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setError("")
+    e.preventDefault();
+    setIsLoading(true);
+    setError("");
 
-    // Basic validation
     if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match")
-      setIsLoading(false)
-      return
+      setError("Passwords do not match");
+      toast.error("Passwords do not match");
+      setIsLoading(false);
+      return;
     }
 
-    if (formData.password.length < 6) {
-      setError("Password must be at least 6 characters long")
-      setIsLoading(false)
-      return
+    try {
+      const res = await resisterFn({
+        name: `${formData.firstName} ${formData.lastName}`,
+        email: formData.email,
+        password: formData.password, 
+      }).unwrap();
+
+      if (res.success) {
+        toast.success("User registered successfully!");
+        router.push(`/auth/verify-otp?email=${encodeURIComponent(formData.email)}`);
+      } else {
+        // handle API response with success: false (if any)
+        toast.error(res.message || "Registration failed");
+        setError(res.message || "Registration failed");
+      }
+    } catch (err: any) {
+      // Handle thrown errors with structured API error format
+      const message =
+        err?.data?.message ||
+        err?.data?.errorSources?.[0]?.details ||
+        err?.message ||
+        "Registration failed";
+      toast.error(message);
+      setError(message);
+    } finally {
+      setIsLoading(false);
     }
+  };
 
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1500))
-
-    // Mock registration success - redirect to OTP verification
-    router.push(`/auth/verify-otp?email=${encodeURIComponent(formData.email)}`)
-
-    setIsLoading(false)
-  }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData(prev => ({
@@ -135,7 +154,7 @@ export default function RegisterPage() {
                 />
               </div>
 
-              <div className="space-y-2">
+              {/* <div className="space-y-2">
                 <Label htmlFor="role">Role</Label>
                 <Select value={formData.role} onValueChange={handleRoleChange}>
                   <SelectTrigger>
@@ -147,7 +166,7 @@ export default function RegisterPage() {
                     <SelectItem value="admin">Administrator</SelectItem>
                   </SelectContent>
                 </Select>
-              </div>
+              </div> */}
 
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>

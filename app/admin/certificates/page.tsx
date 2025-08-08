@@ -24,6 +24,8 @@ import {
 } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 import { Search, Download, Eye, Award, TrendingUp, Users, Calendar } from 'lucide-react'
+import { useDispatch, useSelector } from "react-redux"
+import { getUser, logout } from "@/redux/features/authSlice"
 
 const mockCertificates = [
   {
@@ -86,11 +88,15 @@ export default function AdminCertificatesPage() {
   const [isLoading, setIsLoading] = useState(true)
   const itemsPerPage = 10
 
+  
+    const user = useSelector(getUser);
+  const dispatch = useDispatch();
+
   useEffect(() => {
-    const token = localStorage.getItem("accessToken")
-    const role = localStorage.getItem("userRole")
-    
-    if (!token || role !== "admin") {
+
+
+    if (!user || user.role !== "admin") {
+      dispatch(logout());
       router.push("/auth/login")
       return
     }

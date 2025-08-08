@@ -24,6 +24,8 @@ import {
 } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 import { Search, Download, Plus, Eye, Edit, Trash2, UserPlus, Filter } from 'lucide-react'
+import { useDispatch, useSelector } from "react-redux"
+import { getUser, logout } from "@/redux/features/authSlice"
 
 const mockUsers = [
   {
@@ -92,11 +94,15 @@ export default function AdminUsersPage() {
   const [isLoading, setIsLoading] = useState(true)
   const itemsPerPage = 10
 
+  
+    const user = useSelector(getUser);
+  const dispatch = useDispatch();
+
   useEffect(() => {
-    const token = localStorage.getItem("accessToken")
-    const role = localStorage.getItem("userRole")
-    
-    if (!token || role !== "admin") {
+
+
+    if (!user || user.role !== "admin") {
+      dispatch(logout());
       router.push("/auth/login")
       return
     }

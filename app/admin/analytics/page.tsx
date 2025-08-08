@@ -7,16 +7,21 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
 import { BarChart3, TrendingUp, Users, Award, Calendar, Clock, Target, Activity } from 'lucide-react'
+import { useDispatch, useSelector } from "react-redux"
+import { getUser, logout } from "@/redux/features/authSlice"
 
 export default function AdminAnalyticsPage() {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(true)
 
+  const user = useSelector(getUser);
+  const dispatch = useDispatch();
+
   useEffect(() => {
-    const token = localStorage.getItem("accessToken")
-    const role = localStorage.getItem("userRole")
-    
-    if (!token || role !== "admin") {
+
+
+    if (!user || user.role !== "admin") {
+      dispatch(logout());
       router.push("/auth/login")
       return
     }

@@ -1,10 +1,9 @@
 {
   "/_not-found/page": "app/_not-found/page.js",
-  "/student/profile/page": "app/student/profile/page.js",
-  "/student/dashboard/page": "app/student/dashboard/page.js",
-  "/student/results/page": "app/student/results/page.js",
-  "/page": "app/page.js",
   "/auth/login/page": "app/auth/login/page.js",
-  "/student/test/page": "app/student/test/page.js",
-  "/student/settings/page": "app/student/settings/page.js"
+  "/auth/forgot-password/page": "app/auth/forgot-password/page.js",
+  "/page": "app/page.js",
+  "/auth/register/page": "app/auth/register/page.js",
+  "/auth/verify-otp/page": "app/auth/verify-otp/page.js",
+  "/admin/dashboard/page": "app/admin/dashboard/page.js"
 }

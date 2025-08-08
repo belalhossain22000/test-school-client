@@ -9,30 +9,36 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { ArrowLeft, Mail } from 'lucide-react'
+import { useResendOtpMutation, useVerifyOtpMutation } from "@/redux/api/authApi"
+import { toast } from "sonner"
 
 function VerifyOTPContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const email = searchParams.get("email") || ""
-  
   const [otp, setOtp] = useState(["", "", "", "", "", ""])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
   const [resendCooldown, setResendCooldown] = useState(0)
 
-  // Mock OTP for demonstration (123456)
-  const mockOTP = "123456"
+  const [otpVerifyFn, { isLoading: isVerifyLoading }] = useVerifyOtpMutation()
+  const [otpResendFn, { isLoading: isResendLoading }] = useResendOtpMutation()
+
+
 
   useEffect(() => {
-    if (resendCooldown > 0) {
-      const timer = setTimeout(() => setResendCooldown(resendCooldown - 1), 1000)
-      return () => clearTimeout(timer)
-    }
-  }, [resendCooldown])
+    if (resendCooldown <= 0) return;
+
+    const timer = setInterval(() => {
+      setResendCooldown((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [resendCooldown]);
 
   const handleOtpChange = (index: number, value: string) => {
     if (value.length > 1) return
-    
+
     const newOtp = [...otp]
     newOtp[index] = value
     setOtp(newOtp)
@@ -52,45 +58,55 @@ function VerifyOTPContent() {
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setError("")
+    e.preventDefault();
+    setIsLoading(true);
+    setError("");
 
-    const otpValue = otp.join("")
-    
+    const otpValue = otp.join("");
+
     if (otpValue.length !== 6) {
-      setError("Please enter all 6 digits")
-      setIsLoading(false)
-      return
+      setError("Please enter all 6 digits");
+      setIsLoading(false);
+      return;
     }
 
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    try {
+      const res = await otpVerifyFn({ email, otp: parseInt(otpValue) }).unwrap();
 
-    // Mock OTP verification
-    if (otpValue === mockOTP) {
-      // Mock successful verification - redirect to login
-      router.push("/auth/login?verified=true")
-    } else {
-      setError("Invalid OTP. Please try again.")
+      if (res.success) {
+        toast.success("OTP verified successfully!");
+        // wait 1 second then redirect
+        setTimeout(() => {
+          router.push("/auth/login?verified=true");
+        }, 1000);
+      } else {
+        setError(res.message || "Invalid OTP. Please try again.");
+      }
+    } catch (err: any) {
+      setError(err?.data?.message || err.message || "OTP verification failed.");
+    } finally {
+      setIsLoading(false);
     }
-
-    setIsLoading(false)
-  }
+  };
 
   const handleResendOTP = async () => {
     setResendCooldown(60)
     setError("")
-    
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 500))
-    
-    // Show success message (in real app, this would trigger email/SMS)
-    alert("OTP has been resent to your email")
+
+    try {
+      const res = await otpResendFn({ email }).unwrap();
+      toast.success(res.message || "OTP has been resent to your email");
+    } catch (err: any) {
+      const message = err?.data?.message || err.message || "Failed to resend OTP. Please try again.";
+      setError(message);
+      toast.error(message);
+    }
+
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+
       <div className="w-full max-w-md">
         <div className="mb-6">
           <Button variant="ghost" asChild className="mb-4">
@@ -154,18 +170,18 @@ function VerifyOTPContent() {
                 disabled={resendCooldown > 0}
                 className="text-blue-600 hover:text-blue-700"
               >
-                {resendCooldown > 0 
-                  ? `Resend in ${resendCooldown}s` 
+                {resendCooldown > 0
+                  ? `Resend in ${resendCooldown}s`
                   : "Resend Code"
                 }
               </Button>
             </div>
 
             {/* Demo info */}
-            <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+            {/* <div className="mt-6 p-4 bg-gray-50 rounded-lg">
               <p className="text-sm font-medium text-gray-700 mb-1">Demo Code:</p>
               <p className="text-xs text-gray-600">Use <strong>123456</strong> to verify</p>
-            </div>
+            </div> */}
           </CardContent>
         </Card>
       </div>

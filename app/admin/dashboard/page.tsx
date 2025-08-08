@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { 
+import {
   Table,
   TableBody,
   TableCell,
@@ -24,6 +24,8 @@ import {
 } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 import { Users, BookOpen, Award, TrendingUp, Search, Download, Plus, Eye, Edit, Trash2, UserPlus } from 'lucide-react'
+import { useDispatch, useSelector } from "react-redux"
+import { getUser, logout } from "@/redux/features/authSlice"
 
 // Mock admin data
 const mockAdminData = {
@@ -137,17 +139,19 @@ export default function AdminDashboard() {
   const [isLoading, setIsLoading] = useState(true)
   const itemsPerPage = 10
 
+
+  const user = useSelector(getUser);
+  const dispatch = useDispatch();
+
   useEffect(() => {
-    // Check authentication
-    const token = localStorage.getItem("accessToken")
-    const role = localStorage.getItem("userRole")
-    
-    if (!token || role !== "admin") {
+
+
+    if (!user || user.role !== "admin") {
+      dispatch(logout());
       router.push("/auth/login")
       return
     }
 
-    // Simulate data loading
     setTimeout(() => setIsLoading(false), 1000)
   }, [router])
 
@@ -175,10 +179,10 @@ export default function AdminDashboard() {
 
   const filteredUsers = mockAdminData.recentUsers.filter(user => {
     const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         user.email.toLowerCase().includes(searchTerm.toLowerCase())
+      user.email.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesRole = roleFilter === "all" || user.role === roleFilter
     const matchesStatus = statusFilter === "all" || user.status === statusFilter
-    
+
     return matchesSearch && matchesRole && matchesStatus
   })
 
@@ -357,7 +361,7 @@ export default function AdminDashboard() {
                             </Badge>
                           </TableCell>
                           <TableCell>
-                            <Badge 
+                            <Badge
                               variant={user.status === "active" ? "default" : "secondary"}
                               className="capitalize"
                             >

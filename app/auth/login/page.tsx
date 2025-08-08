@@ -12,6 +12,8 @@ import { Eye, EyeOff, ArrowLeft } from 'lucide-react'
 import { useLoginMutation } from "@/redux/api/authApi"
 import { useDispatch } from "react-redux"
 import { setUser } from "@/redux/features/authSlice"
+import { jwtDecode } from "jwt-decode";
+import { toast } from "sonner"
 
 export default function LoginPage() {
   const router = useRouter()
@@ -21,29 +23,62 @@ export default function LoginPage() {
     password: ""
   })
   const [error, setError] = useState("")
-   const dispatch = useDispatch()
-  const [loginFn,{isLoading}] = useLoginMutation()
+  const dispatch = useDispatch()
+  const [loginFn, { isLoading }] = useLoginMutation()
 
 
 
-   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError("")
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
 
     try {
-      const res = await loginFn({ email:formData.email, password: formData.password }).unwrap()
+      const res = await loginFn({ email: formData.email, password: formData.password }).unwrap();
 
       if (res.success) {
-        dispatch(setUser({ token: res?.data?.token }))
-        router.push("/")
+        if (res.message === "Please verify your email") {
+          toast.info("Please verify your email to continue.");
+          router.push(`/auth/verify-otp?email=${encodeURIComponent(formData.email)}`);
+          return;
+        }
+
+        if (!res.data.token) {
+          toast.error("Invalid token received.");
+          setError("Invalid token received");
+          return;
+        }
+
+        dispatch(setUser({ token: res.data.token }));
+
+        const decodedUser = jwtDecode<{ role: string }>(res.data.token);
+
+        const roleToRouteMap: Record<string, string> = {
+          admin: "/admin/dashboard",
+          student: "/student/dashboard",
+          supervisor: "/supervisor/dashboard",
+        };
+
+        const redirectPath = roleToRouteMap[decodedUser.role] || "/";
+        toast.success(`Welcome back, ${decodedUser.role}! Redirecting...`);
+        router.push(redirectPath);
       } else {
-        setError(res?.error || "Login failed. Please try again.")
+        toast.error(res.message || "Login failed. Please try again.");
+        setError(res.message || "Login failed. Please try again.");
       }
     } catch (err: any) {
-      console.log(err);
-      setError(err.message || "Login failed. Please try again.")
+      const message =
+        err?.data?.message ||
+        err?.data?.errorSources?.[0]?.details ||
+        err?.message ||
+        "Login failed. Please try again.";
+
+      toast.error(message);
+      setError(message);
     }
-  }
+  };
+
+
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData(prev => ({
@@ -124,8 +159,8 @@ export default function LoginPage() {
               </div>
 
               <div className="flex items-center justify-between">
-                <Link 
-                  href="/auth/forgot-password" 
+                <Link
+                  href="/auth/forgot-password"
                   className="text-sm text-blue-600 hover:underline"
                 >
                   Forgot password?
